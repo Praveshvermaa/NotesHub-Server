@@ -10,7 +10,12 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 connectDB();
-app.use(cors({ origin: true, credentials: true }));
+app.use(
+  cors({
+    origin: "https://notes-hub-client-weld.vercel.app", // ✅ your frontend domain
+    credentials: true, // ✅ this is crucial to allow cookies
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
@@ -20,6 +25,8 @@ app.get('/', (req, res) => {
     res.send("server is live");
 });
 
+
+
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
