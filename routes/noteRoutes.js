@@ -164,7 +164,10 @@ router.post("/previous-papers", async (req, res) => {
   }
 
   try {
-    const papers = await paper.find({ department:branch, subject:year });
+    const papers = await paper.find({
+      department: { $regex: new RegExp("^" + branch + "$", "i") },
+      subject: { $regex: new RegExp("^" + year + "$", "i") },
+    });
     res.status(200).json({ success: true, papers });
   } catch (err) {
     console.error("Error fetching papers:", err);

@@ -56,7 +56,7 @@ const uploadPaper = async (req, res) => {
     
     const existingPapers = await Paper.find({ subject, department, year });
 
-    if (existingPapers.length > 2) {
+    if (existingPapers.length) {
       return res.status(400).json({
         success: false,
         message: 'Already uploaded!',
