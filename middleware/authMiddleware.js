@@ -18,6 +18,9 @@ const authMiddleware = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ success: false, message: "User not found." });
     }
+    if(!user.isVerified){
+      return res.status(401).json({ success: false, message: "Email is not verified" });
+    }
 
     req.user = user;  //  user to request object
     next();  
