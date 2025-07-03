@@ -6,6 +6,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const noteRoutes = require("./routes/noteRoutes");
 const emailVerifyRoute = require('./routes/emailVerify')
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -37,6 +38,12 @@ app.use("/api",emailVerifyRoute);
 app.get('/', (req, res) => {
     res.send("server is live");
 });
+//https://noteshub-server-47sm.onrender.com
+setInterval(() => {
+  axios.get('https://noteshub-server-47sm.onrender.com') 
+    .then(() => console.log('Server kept alive'))
+    .catch((err) => console.error('Error keeping server alive:', err));
+}, 300000);
 
 
 
