@@ -20,8 +20,8 @@ const paperSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true } // Adding timestamps (createdAt, updatedAt)
+  { timestamps: true } 
 );
 
-// Create and export the model based on the schema
+
 module.exports = mongoose.model("Paper", paperSchema);

@@ -18,13 +18,13 @@ router.get("/check-auth", authMiddleware, (req, res) => {
     res.status(200).json({
       success: true,
       message: "User authenticated",
-      user: req.user,  // The user information added by the middleware
+      user: req.user,  
     });
   });
 
 router.post("/resend-verification", resendVerification);
 
-// POST /auth/forgot-password
+
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
 
@@ -34,29 +34,29 @@ router.post("/forgot-password", async (req, res) => {
     return res.status(400).json({ message: "Email doesn't exist!" });
   }
 
-  // Generate JWT token for resetting password
+  
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
   const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
 
-  // Set up Nodemailer transporter
+ 
   const transporter = nodemailer.createTransport({
-    service: "gmail", // or other email service
+    service: "gmail", // 
     auth: {
-      user: process.env.EMAIL_USER, // Your email address (from which you will send emails)
-      pass: process.env.EMAIL_PASS, // Your email password (use environment variables to store these)
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS, 
     },
   });
 
-  // Set up email data
+  
   const mailOptions = {
-    from: `"NotesHub" <${process.env.EMAIL_USER}>`, // Sender's email
-    to: email, // Recipient's email
-    subject: "Reset Your Password", // Subject of the email
+    from: `"NotesHub" <${process.env.EMAIL_USER}>`, 
+    to: email,
+    subject: "Reset Your Password", 
     html: `<p>Click the link below to reset your password:</p><a href="${resetLink}">${resetLink}</a>`,
   };
 
   try {
-    // Send email
+  
     await transporter.sendMail(mailOptions);
     res.json({ message: "Reset link sent to your email." });
   } catch (error) {
@@ -66,7 +66,7 @@ router.post("/forgot-password", async (req, res) => {
 });
 
 
-// POST /auth/reset-password/:token
+
 router.post("/reset-password/:token", async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;

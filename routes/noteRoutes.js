@@ -35,7 +35,7 @@ router.delete("/delete/:id", authMiddleware, async (req, res) => {
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
     }
-// function to extract id of note from cloudinary
+
     function extractPublicId(url) {
       const parts = url.split("/");
       const filenameWithExt = parts[parts.length - 1];
@@ -49,14 +49,14 @@ router.delete("/delete/:id", authMiddleware, async (req, res) => {
       
     }
 
-    // Remove noteId from the uploader's user.notes array
+   
     if (note.uploader) {
       await User.findByIdAndUpdate(req.user._id, {
         $pull: { notesIds: note._id }
       });
     }
 
-    // Delete note from the database
+    
     await Note.findByIdAndDelete(noteId);
 
     res.status(200).json({ message: "Note deleted successfully" });
@@ -68,7 +68,7 @@ router.delete("/delete/:id", authMiddleware, async (req, res) => {
 
 
 
-// POST /api/notes - Get Notes based on Average Rating
+
 router.post("/", async (req, res) => {
   const { branch, semester, year } = req.body;
 
@@ -88,13 +88,13 @@ router.post("/", async (req, res) => {
       },
       {
         $lookup: {
-          from: "users", // your users collection
+          from: "users", 
           localField: "uploader",
           foreignField: "_id",
           as: "uploaderInfo"
         }
       },
-      { $unwind: "$uploaderInfo" }, // turn uploaderInfo array into an object
+      { $unwind: "$uploaderInfo" }, 
       { $sort: { averageRating: -1 } }
     ]);
 
@@ -119,7 +119,7 @@ router.post('/rate', async (req, res) => {
       return res.status(404).json({ message: 'Note not found' });
     }
 
-    // Update rating sum and count
+    
     note.ratingSum += rating;
     note.totalRatingUsers += 1;
 
@@ -145,48 +145,48 @@ router.get('/search', async (req, res) => {
   const { subject } = req.query;
 
   try {
-    // Aggregation to fetch notes, calculate average rating, and populate uploader info
+   
     const notes = await Note.aggregate([
       {
         $match: {
-          subject: { $regex: new RegExp(subject, "i") }, // Case-insensitive match for subject
+          subject: { $regex: new RegExp(subject, "i") }, 
         },
       },
       {
         $addFields: {
           averageRating: {
             $cond: {
-              if: { $eq: ["$totalRatingUsers", 0] }, // If no ratings, set averageRating to 0
+              if: { $eq: ["$totalRatingUsers", 0] }, 
               then: 0,
-              else: { $divide: ["$ratingSum", "$totalRatingUsers"] }, // Calculate average rating
+              else: { $divide: ["$ratingSum", "$totalRatingUsers"] }, 
             },
           },
         },
       },
       {
         $lookup: {
-          from: 'users', // The name of the collection for the 'User' model
-          localField: 'uploader', // Field in 'Note' collection to match the '_id' of 'User'
-          foreignField: '_id', // The field in 'User' collection to match the 'uploader'
-          as: 'uploaderInfo', // Name of the new field to store populated data
+          from: 'users', 
+          localField: 'uploader',
+          foreignField: '_id', 
+          as: 'uploaderInfo', 
         },
       },
       {
-        $unwind: '$uploaderInfo', // To flatten the 'uploaderInfo' array into an object
+        $unwind: '$uploaderInfo', 
       },
       {
         $addFields: {
-          uploaderName: "$uploaderInfo.name", // Assuming 'name' is the field for uploader's name
+          uploaderName: "$uploaderInfo.name",
         },
       },
-      { $sort: { averageRating: -1 } }, // Sort by average rating in descending order
+      { $sort: { averageRating: -1 } }, 
     ]);
 
-    // Send the response with success status and notes
+   
     res.status(200).json({
       success: true,
       notes,
-      totalNotes: notes.length, // Optional count of notes
+      totalNotes: notes.length,
       subject,
     });
   } catch (error) {

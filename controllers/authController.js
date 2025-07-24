@@ -18,7 +18,7 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    //  email verification token
+    
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const hashedToken = crypto.createHash("sha256").update(verificationToken).digest("hex");
     const expireTime = Date.now() + 3600000; // 1 hour from now
@@ -31,15 +31,15 @@ exports.register = async (req, res) => {
       emailVerifyExpire: expireTime,
     });
 
-    // Send verification email
+    
     const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${verificationToken}`;
 
-    //  test email transporter 
+    
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        user: process.env.EMAIL_USER, // your Gmail
-        pass: process.env.EMAIL_PASS, // your App password
+        user: process.env.EMAIL_USER, //  Gmail
+        pass: process.env.EMAIL_PASS, //  App password
       },
     });
 
@@ -78,7 +78,7 @@ exports.login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // ✅ only true in production
+      secure: process.env.NODE_ENV === "production", //  only true in production
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
     });
@@ -114,7 +114,7 @@ exports.resendVerification = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email is already verified" });
     }
 
-    // Generate a new token
+   
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const hashedToken = crypto.createHash("sha256").update(verificationToken).digest("hex");
     const expireTime = Date.now() + 3600000; // 1 hour
@@ -124,7 +124,7 @@ exports.resendVerification = async (req, res) => {
 
     await user.save();
 
-    // Resend email
+   
     const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${verificationToken}`;
 
     const transporter = nodemailer.createTransport({
